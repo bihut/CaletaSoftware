@@ -7,10 +7,10 @@
 # WARNING! All changes made in this file will be lost!
 
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
-
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(557, 307)
@@ -18,24 +18,20 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
-        self.uploadVideo = QtWidgets.QPushButton(self.centralwidget)
-        self.uploadVideo.setObjectName("uploadVideo")
-        self.gridLayout.addWidget(self.uploadVideo, 0, 2, 1, 1)
-        self.enableCamera = QtWidgets.QPushButton(self.centralwidget)
-        self.enableCamera.setObjectName("enableCamera")
-        self.gridLayout.addWidget(self.enableCamera, 0, 0, 1, 1)
+        self.deleteLastVideo = QtWidgets.QPushButton(self.centralwidget)
+        self.deleteLastVideo.setObjectName("deleteLastVideo")
+        self.gridLayout.addWidget(self.deleteLastVideo, 0, 2, 1, 1)
         self.startRecording = QtWidgets.QPushButton(self.centralwidget)
         self.startRecording.setObjectName("startRecording")
         self.gridLayout.addWidget(self.startRecording, 0, 1, 1, 1)
-        self.videoMetadata = QtWidgets.QPushButton(self.centralwidget)
-        self.videoMetadata.setObjectName("videoMetadata")
-        self.gridLayout.addWidget(self.videoMetadata, 1, 0, 1, 1)
-        self.deleteLastVideo = QtWidgets.QPushButton(self.centralwidget)
-        self.deleteLastVideo.setObjectName("deleteLastVideo")
-        self.gridLayout.addWidget(self.deleteLastVideo, 1, 1, 1, 1)
-        self.clearHistoryBrowser = QtWidgets.QPushButton(self.centralwidget)
-        self.clearHistoryBrowser.setObjectName("clearHistoryBrowser")
-        self.gridLayout.addWidget(self.clearHistoryBrowser, 1, 2, 1, 1)
+        self.enableCamera = QtWidgets.QPushButton(self.centralwidget)
+        self.enableCamera.setObjectName("enableCamera")
+        self.gridLayout.addWidget(self.enableCamera, 0, 0, 1, 1)
+        self.videoFrame = QtWidgets.QFrame(self.centralwidget)
+        self.videoFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.videoFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.videoFrame.setObjectName("videoFrame")
+        self.gridLayout.addWidget(self.videoFrame, 1, 0, 1, 3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 557, 22))
@@ -54,10 +50,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.uploadVideo.setText(_translate("MainWindow", "Upload Video"))
-        self.enableCamera.setText(_translate("MainWindow", "Enable Camera"))
-        self.startRecording.setText(_translate("MainWindow", "Start Recording"))
-        self.videoMetadata.setText(_translate("MainWindow", "Last Video Metadata"))
         self.deleteLastVideo.setText(_translate("MainWindow", "Delete last video"))
-        self.clearHistoryBrowser.setText(_translate("MainWindow", "Clean memory"))
+        self.startRecording.setText(_translate("MainWindow", "Start Recording"))
+        self.enableCamera.setText(_translate("MainWindow", "Enable Camera"))
         self.menuAbout.setTitle(_translate("MainWindow", "About"))
