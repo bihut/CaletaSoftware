@@ -5,15 +5,31 @@ from PyQt5.QtCore import pyqtSlot
 from CaletaOAKD import CaletaAPI
 from mainUI import Ui_MainWindow
 caleta = None
+pipeline = None
+recording = False
 def handleCamera():
-    print("clicked") # we will just print clicked when the button is pressed
-    caleta.switchOnCamera(ui.videoFrame)
+
+    #caleta.switchOnCamera("video1", ui.videoContent)
+
+    caleta.switchOnCamera("video1",ui.videoContent)
+
+
 def handleRecording():
-    print("clicked2") # we will just print clicked when the button is pressed
+    print("dejando de grabar")  # we will just print clicked when the button is pressed
+    caleta.switchOffCamera()
 
+    '''
+    global recording
+    if recording==False:
+        caleta.startRecording()
+        recording = True
+    else:
+        caleta.startRecording()
+        recording = False
+    '''
 def uploadVideo():
-    print("clicked") # we will just print clicked when the button is pressed
-
+    #print("clicked") # we will just print clicked when the button is pressed
+    caleta.stopCamera()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
@@ -22,10 +38,8 @@ if __name__ == "__main__":
     ui.setupUi(window)
     ui.enableCamera.clicked.connect(handleCamera)
     ui.startRecording.clicked.connect(handleRecording)
+    ui.deleteLastVideo.clicked.connect(uploadVideo)
     window.show()
-
-    caleta = CaletaAPI.CaletaAPI()
-    caleta.initCamera(ui.videoFrame)
-    caleta.switchOnCamera(ui.videoFrame)
-
+    pipeline = CaletaAPI.CaletaAPI.getNewPipeline()
+    caleta = CaletaAPI.CaletaAPI(pipeline)
     sys.exit(app.exec_())
