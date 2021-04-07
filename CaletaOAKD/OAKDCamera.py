@@ -8,7 +8,7 @@ import numpy as np
 import depthai as dai
 
 class VideoThread(QThread):
-    #change_pixmap_signal = pyqtSignal(np.ndarray)
+    change_pixmap_signal = pyqtSignal(np.ndarray)
     record_video = pyqtSignal(np.ndarray, cv2.VideoWriter)
     def __init__(self,streamName,videoContainer):
         super().__init__()
@@ -32,14 +32,13 @@ class VideoThread(QThread):
         cam_rgb.preview.link(xout_rgb.input)
 
     def run(self):
-
         with dai.Device(self.pipeline) as device:
             device.startPipeline()
             q_rgb = device.getOutputQueue(name=self.streamName, maxSize=4, blocking=False)
             while self._run_flag:
                 in_rgb = q_rgb.get()  # blocking call, will wait until a new data has arrived
                 arr2 = np.require(in_rgb.getCvFrame(), np.uint8, 'C')
-                #self.change_pixmap_signal.emit(arr2)
+                self.change_pixmap_signal.emit(arr2)
                 self.record_video.emit(arr2, self.out1)
 
 
@@ -161,7 +160,7 @@ class OAKD(QWidget):
     def startCamera(self):
         self.thread = VideoThread(self.streamName,self.videoContainer)
         # connect its signal to the update_image slot
-        #self.thread.change_pixmap_signal.connect(self.update_image)
+        self.thread.change_pixmap_signal.connect(self.update_image)
         self.thread.record_video.connect(self.save_video_image)
         # start the thread
         self.thread.start()
