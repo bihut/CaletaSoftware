@@ -45,17 +45,18 @@ class VideoThread(QThread):
     def startRecording(self,writer):
         self.writer = writer
         self._recording = True
+
     def stopRecording(self):
         self._recording=False
         self.writer.release()
 
     def stop(self):
         """Sets run flag to False and waits for thread to finish"""
-        print("parada desde dentro")
         self._run_flag = False
-        #self.out1.release()
-        #self.closeWriter()
-        self.stopRecording()
+        if self._recording:
+            self.stopRecording()
+        self.wait()
+
 class OAKD(QWidget):
     def setStreamName(self,name):
         self.streamName = name
@@ -81,9 +82,6 @@ class OAKD(QWidget):
     def stopCamera(self):
         self.thread.stop()
 
-     #def stopAll(self):
-     #   self.thread.stop()
-
     def stopRecording(self):
         self.thread.stopRecording()
 
@@ -93,15 +91,6 @@ class OAKD(QWidget):
             self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
         self.thread.startRecording(writer)
 
-        '''
-        self.thread2 = VideoRecord(self.streamName,self.videoContainer)
-        # connect its signal to the update_image slot
-        #self.thread2.change_pixmap_signal.connect(self.update_image)
-        self.thread2.record_video.connect(self.save_video_image)
-        # start the thread
-        self.thread2.start()
-        self.thread2.exec()
-        '''
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
         """Updates the image_label with a new opencv image"""
