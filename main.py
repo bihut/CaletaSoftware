@@ -24,7 +24,6 @@ def handleRecording():
 
 
 def uploadVideo():
-    #print("clicked") # we will just print clicked when the button is pressed
     caleta.stopCamera()
 
 if __name__ == "__main__":
