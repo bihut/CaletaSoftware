@@ -27,12 +27,18 @@
       <property name="text">
        <string>Start Recording</string>
       </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="0" column="0">
      <widget class="QPushButton" name="enableCamera">
       <property name="text">
-       <string>Enable Camera</string>
+       <string>Start Camera</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
       </property>
      </widget>
     </item>

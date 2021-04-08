@@ -11,35 +11,24 @@ class CaletaAPI:
     def getNewPipeline():
         return dai.Pipeline()
 
+    @staticmethod
+    def getUniqueID():
+        import calendar;
+        import time;
+        ts = calendar.timegm(time.gmtime())
+        return ts
 
     def __init__(self,pipeline):
         self.pipeline =  pipeline
-        #self.initCamera()
-    '''
-    def initCamera(self,frame):
-        # Define a source - color camera
-        cam_rgb = self.pipeline.createColorCamera()
-        cam_rgb.setPreviewSize(300, 300)
-        cam_rgb.setBoardSocket(dai.CameraBoardSocket.RGB)
-        cam_rgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
-        cam_rgb.setInterleaved(False)
-        cam_rgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.RGB)
-
-
-        # Create output
-        xout_rgb = self.pipeline.createXLinkOut()
-        xout_rgb.setStreamName("rgb")
-
-        #cam_rgb.preview.link(xout_rgb.input)
-
-    '''
 
     def stopCamera(self):
         self.camera.stopAll()
 
     def startRecording(self):
-        self.camera.startRecording(self.streamName,self.videoContainer)
+        self.camera.startRecording(self.getUniqueID())
 
+    def stopRecording(self):
+        self.camera.stopRecording()
 
     def switchOffCamera(self):
         self.camera.stopCamera()

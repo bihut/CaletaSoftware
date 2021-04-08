@@ -6,20 +6,20 @@ import cv2
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QThread
 import numpy as np
 import depthai as dai
-
+PATH = '/home/bihut/Vídeos/'
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
     record_video = pyqtSignal(np.ndarray, cv2.VideoWriter)
     def __init__(self,streamName,videoContainer):
         super().__init__()
         self._run_flag = True
+        self._recording = False
         self.streamName = streamName
         self.videoContainer = videoContainer
         self.pipeline = dai.Pipeline()
 
-        self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        self.out1 = cv2.VideoWriter('/home/bihut/Vídeos/output.mp4', self.fourcc, 30, (
-        self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
+        #self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        #self.out1 = cv2.VideoWriter('/home/bihut/Vídeos/output.mp4', self.fourcc, 30, (self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
 
         cam_rgb = self.pipeline.createColorCamera()
         cam_rgb.setPreviewSize(self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height())
@@ -39,94 +39,23 @@ class VideoThread(QThread):
                 in_rgb = q_rgb.get()  # blocking call, will wait until a new data has arrived
                 arr2 = np.require(in_rgb.getCvFrame(), np.uint8, 'C')
                 self.change_pixmap_signal.emit(arr2)
-                self.record_video.emit(arr2, self.out1)
+                if self._recording:
+                    self.record_video.emit(arr2, self.writer)
 
+    def startRecording(self,writer):
+        self.writer = writer
+        self._recording = True
+    def stopRecording(self):
+        self._recording=False
+        self.writer.release()
 
     def stop(self):
         """Sets run flag to False and waits for thread to finish"""
         print("parada desde dentro")
         self._run_flag = False
-        self.out1.release()
-
-
-'''
-class VideoRecord(QThread):
-    #change_pixmap_signal = pyqtSignal(np.ndarray)
-    record_video = pyqtSignal(np.ndarray)
-    def __init__(self,streamName,videoContainer):
-        super().__init__()
-        self._run_flag = True
-        self.streamName = streamName
-        self.videoContainer = videoContainer
-        self.pipeline = dai.Pipeline()
-
-        cam_rgb = self.pipeline.createColorCamera()
-        cam_rgb.setPreviewSize(self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height())
-        cam_rgb.setBoardSocket(dai.CameraBoardSocket.RGB)
-        cam_rgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
-        cam_rgb.setInterleaved(False)
-        cam_rgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.RGB)
-        xout_rgb = self.pipeline.createXLinkOut()
-        xout_rgb.setStreamName(self.streamName)
-        cam_rgb.preview.link(xout_rgb.input)
-
-
-    def run(self):
-        with dai.Device(self.pipeline) as device:
-            print(device)
-            device.startPipeline()
-            q_rgb = device.getOutputQueue(name=self.streamName, maxSize=4, blocking=False)
-            while self._run_flag:
-                in_rgb = q_rgb.get()  # blocking call, will wait until a new data has arrived
-                arr2 = np.require(in_rgb.getCvFrame(), np.uint8, 'C')
-                 #self.change_pixmap_signal.emit(arr2)
-                self.record_video.emit(arr2)
-
-
-
-    def stop(self):
-        """Sets run flag to False and waits for thread to finish"""
-        self._run_flag = False
-        self.wait()
-
-
-'''
-
-'''
-class Thread2(QThread):
-
-    def __init__(self, pipeline,streamName):
-        super().__init__()
-        self.active = True
-        self.pipeline = pipeline
-        self.streamName = streamName
-
-    def run(self):
-        if self.active:
-            self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
-            self.out1 = cv2.VideoWriter('/home/bihut/Vídeos/output.avi', self.fourcc, 30, (640, 480))
-            #self.cap1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-            #self.cap1.set(3, 480)
-            #self.cap1.set(4, 640)
-            #self.cap1.set(5, 30)
-            xout_rgb = self.pipeline.createXLinkOut()
-            xout_rgb.setStreamName(self.streamName)
-            while self.active:
-                #ret1, image1 = self.cap1.read()
-                #if ret1:
-                with dai.Device(self.pipeline) as device:
-                    device.startPipeline()
-                    q_rgb = device.getOutputQueue(name=self.streamName, maxSize=4, blocking=False)
-                    while self._run_flag:
-                        in_rgb = q_rgb.get()  # blocking call, will wait until a new data has arrived
-                        arr2 = np.require(in_rgb.getCvFrame(), np.uint8, 'C')
-                        #self.change_pixmap_signal.emit(arr2)
-                        self.out1.write(arr2)
-                        #self.msleep(10)
-
-    def stop(self):
-        self.out1.release()
-'''
+        #self.out1.release()
+        #self.closeWriter()
+        self.stopRecording()
 class OAKD(QWidget):
     def setStreamName(self,name):
         self.streamName = name
@@ -138,24 +67,7 @@ class OAKD(QWidget):
         super().__init__()
         self.streamName = streamName
         self.videoContainer = videoContainer
-        '''
-        self.setWindowTitle("Qt live label demo")
-        self.disply_width = 640
-        self.display_height = 480
-        # create the label that holds the image
-        self.image_label = QLabel(self)
-        self.image_label.resize(self.disply_width, self.display_height)
-        # create a text label
-        self.textLabel = QLabel('Webcam')
 
-        # create a vertical box layout and add the two labels
-        vbox = QVBoxLayout()
-        vbox.addWidget(self.image_label)
-        vbox.addWidget(self.textLabel)
-        # set the vbox layout as the widgets layout
-        self.setLayout(vbox)
-        '''
-        # create the video capture thread
 
     def startCamera(self):
         self.thread = VideoThread(self.streamName,self.videoContainer)
@@ -167,14 +79,20 @@ class OAKD(QWidget):
         self.thread.exec()
 
     def stopCamera(self):
-        print("camara parada")
-        self.thread.stop()
-        #event.accept()
-
-    def stopAll(self):
         self.thread.stop()
 
-    def startRecording(self,pipeline,streamName):
+     #def stopAll(self):
+     #   self.thread.stop()
+
+    def stopRecording(self):
+        self.thread.stopRecording()
+
+    def startRecording(self,id):
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        writer = cv2.VideoWriter(PATH+str(id)+".mp4", fourcc, 30, (
+            self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
+        self.thread.startRecording(writer)
+
         '''
         self.thread2 = VideoRecord(self.streamName,self.videoContainer)
         # connect its signal to the update_image slot

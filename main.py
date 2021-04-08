@@ -6,27 +6,23 @@ from CaletaOAKD import CaletaAPI
 from mainUI import Ui_MainWindow
 caleta = None
 pipeline = None
-recording = False
 def handleCamera():
-
-    #caleta.switchOnCamera("video1", ui.videoContent)
-
-    caleta.switchOnCamera("video1",ui.videoContent)
-
+    if ui.enableCamera.isChecked():
+        ui.enableCamera.setText("Stop Camera")
+        caleta.switchOnCamera("video1", ui.videoContent)
+    else:
+        ui.enableCamera.setText("Start Camera")
+        caleta.switchOffCamera()
 
 def handleRecording():
-    print("dejando de grabar")  # we will just print clicked when the button is pressed
-    caleta.switchOffCamera()
-
-    '''
-    global recording
-    if recording==False:
+    if ui.startRecording.isChecked():
+        ui.startRecording.setText("Stop Recording")
         caleta.startRecording()
-        recording = True
     else:
-        caleta.startRecording()
-        recording = False
-    '''
+        ui.startRecording.setText("Start Recording")
+        caleta.stopRecording()
+
+
 def uploadVideo():
     #print("clicked") # we will just print clicked when the button is pressed
     caleta.stopCamera()
