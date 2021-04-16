@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="90335c50-e27e-4e2f-a58e-ba2eba9cb381" name="192.168.0.18" url="">
+        <fileTransfer rootFolder="/home/pi/Documents/CaletaOAKD" accessType="SFTP" host="192.168.0.18" port="22" sshConfigId="c8649b41-383e-4e46-90d9-ea620e9db1f6" sshConfig="pi@192.168.0.18:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
