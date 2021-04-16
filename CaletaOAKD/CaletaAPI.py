@@ -20,6 +20,7 @@ class CaletaAPI:
 
     def __init__(self,pipeline):
         self.pipeline =  pipeline
+        self.PATH = "/home/bihut/Vídeos/"
 
     def stopCamera(self):
         self.camera.stopAll()
@@ -33,11 +34,22 @@ class CaletaAPI:
     def switchOffCamera(self):
         self.camera.stopCamera()
 
+    def changePath(self,str):
+        self.PATH=str
+        try:
+            if self.camera is not None:
+                self.camera.changePath(str)
+        except Exception:
+            pass
+
+        #self.camera.changePath(str)
+
     def switchOnCamera(self, streamName,videoContainer):
         self.streamName = streamName;
         self.videoContainer = videoContainer
         self.camera = OAKD(self.streamName,self.videoContainer)
         self.camera.startCamera()
+        self.camera.changePath(self.PATH)
 
         '''''
         with dai.Device(self.pipeline) as device:

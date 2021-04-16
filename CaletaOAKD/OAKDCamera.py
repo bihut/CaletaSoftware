@@ -6,7 +6,7 @@ import cv2
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QThread
 import numpy as np
 import depthai as dai
-PATH = '/home/bihut/Vídeos/'
+
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
     record_video = pyqtSignal(np.ndarray, cv2.VideoWriter)
@@ -17,7 +17,6 @@ class VideoThread(QThread):
         self.streamName = streamName
         self.videoContainer = videoContainer
         self.pipeline = dai.Pipeline()
-
         #self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         #self.out1 = cv2.VideoWriter('/home/bihut/Vídeos/output.mp4', self.fourcc, 30, (self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
 
@@ -68,7 +67,8 @@ class OAKD(QWidget):
         super().__init__()
         self.streamName = streamName
         self.videoContainer = videoContainer
-
+        self.videoname = ""
+        self.PATH = '/home/bihut/Vídeos/'
 
     def startCamera(self):
         self.thread = VideoThread(self.streamName,self.videoContainer)
@@ -83,12 +83,24 @@ class OAKD(QWidget):
         self.thread.stop()
 
     def stopRecording(self):
+        self.videoname=""
         self.thread.stopRecording()
+
+
+    def getCurrentVideoName(self):
+        return self.videoname
+
+    def changePath(self,str):
+        self.PATH = str
+        print("path cambiado a %s",self.PATH)
 
     def startRecording(self,id):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        writer = cv2.VideoWriter(PATH+str(id)+".mp4", fourcc, 30, (
+        self.videoname = self.PATH + str(id)+".mp4"
+        writer = cv2.VideoWriter(self.videoname, fourcc, 30, (
             self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
+        #writer = cv2.VideoWriter(self.videoname, fourcc, 30, (
+        #        1280, 800))
         self.thread.startRecording(writer)
 
     @pyqtSlot(np.ndarray)

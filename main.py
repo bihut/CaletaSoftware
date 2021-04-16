@@ -3,7 +3,9 @@ import sys
 import time
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import QTime, QTimer
+from PyQt5.QtCore import QTime, QTimer, QThread, pyqtSignal
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QInputDialog
 
 from CaletaOAKD import CaletaAPI
 from mainUI import Ui_MainWindow
@@ -11,6 +13,35 @@ from mainUI import Ui_MainWindow
 #pipeline = None
 #s = None
 s = None
+thread = None
+
+
+
+class DisplayImage(QThread):
+    displayImg = pyqtSignal(bool)
+    def __init__(self):
+        super().__init__()
+        self._recording = True
+
+    def run(self):
+        while self._recording:
+            self.displayImg.emit(True)
+            time.sleep(1)
+            self.displayImg.emit(False)
+            time.sleep(1)
+            print("aqui dentro")
+
+    def stop(self):
+        """Sets run flag to False and waits for thread to finish"""
+        self._recording= False
+
+
+def changeRecordImg(state):
+    ui.recordicon.setVisible(state)
+    ui.recordstate.setVisible(state)
+    print("cambiando %b",state)
+
+
 def handleCamera():
     if ui.enableCamera.isChecked():
         ui.enableCamera.setText("Stop Camera")
@@ -31,25 +62,45 @@ def stopCounting():
     ui.watchcounter.display("00:00:00")
 
 def handleRecording():
+    global thread
     if ui.startRecording.isChecked():
-        startCounting()
-
         ui.startRecording.setText("Stop Recording")
         ui.startRecording.setIcon(QtGui.QIcon('imgs/record.png'))
         caleta.startRecording()
-
+        visibleRecordItems(True)
+        startCounting()
+        ui.currentvideoname.setText(caleta.camera.getCurrentVideoName())
+        thread = DisplayImage()
+        thread.displayImg.connect(changeRecordImg)
+        thread.start()
+        thread.exec()
     else:
-        stopCounting()
         ui.startRecording.setText("Start Recording")
         ui.startRecording.setIcon(QtGui.QIcon())
         caleta.stopRecording()
+        visibleRecordItems(False)
+        stopCounting()
+        thread.stop()
+
+
+
+def visibleRecordItems(state):
+    ui.recordicon.setVisible(state)
+    ui.recordstate.setVisible(state)
+    ui.watchcounter.setVisible(state)
+    ui.currentvideoname.setVisible(state)
+    ui.videonamelabel.setVisible(state)
+    ui.recordicon.setVisible(state)
 
 def LCDEvent():
     global s
     s += 1
     ui.watchcounter.display(time.strftime('%H:%M:%S', time.gmtime(s)))
-    #ui.watchcounter.display(s)
 
+def changePath():
+    text, ok = QInputDialog.getText(window,'Change path', 'Set the new path (e.g. /home/user/videos)')
+    if ok:
+        caleta.changePath(str(text))
 
 if __name__ == "__main__":
 
@@ -59,6 +110,10 @@ if __name__ == "__main__":
     ui.setupUi(window)
     ui.enableCamera.clicked.connect(handleCamera)
     ui.startRecording.clicked.connect(handleRecording)
+    ui.setpath.triggered.connect(changePath)
+
+    ui.recordicon.setPixmap(QtGui.QPixmap('imgs/recording.png'))
+    ui.recordicon.setScaledContents(True)
     _seconds = 0
     ui.enableCamera.setIcon(QtGui.QIcon('imgs/play.png'))
     ui.watchcounter.setNumDigits(8)
@@ -68,10 +123,14 @@ if __name__ == "__main__":
     timer = QTimer()
     timer.timeout.connect(LCDEvent)
     ui.watchcounter.display("00:00:00")
+
     #-----
+    visibleRecordItems(False)
 
 
     window.show()
     pipeline = CaletaAPI.CaletaAPI.getNewPipeline()
     caleta = CaletaAPI.CaletaAPI(pipeline)
     sys.exit(app.exec_())
+
+

@@ -570,7 +570,7 @@ color: rgb(245, 121, 0);</string>
     </property>
     <property name="icon">
      <iconset theme="play">
-      <normaloff>.</normaloff>.</iconset>
+      <normaloff>../../../../../.designer/backup</normaloff>../../../../../.designer/backup</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -634,7 +634,7 @@ color: rgb(245, 121, 0);</string>
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="videonamelabel">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -655,26 +655,13 @@ color: rgb(245, 121, 0);</string>
 </string>
     </property>
     <property name="text">
-     <string>Current Video:</string>
-    </property>
-   </widget>
-   <widget class="QGraphicsView" name="recordicon">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>552</x>
-      <y>16</y>
-      <width>41</width>
-      <height>41</height>
-     </rect>
+     <string>Video filename:</string>
     </property>
    </widget>
    <widget class="QLabel" name="recordstate">
     <property name="geometry">
      <rect>
-      <x>600</x>
+      <x>630</x>
       <y>30</y>
       <width>91</width>
       <height>17</height>
@@ -688,7 +675,7 @@ color: rgb(245, 121, 0);</string>
      </font>
     </property>
     <property name="text">
-     <string/>
+     <string>Recording...</string>
     </property>
    </widget>
    <widget class="Line" name="line">
@@ -709,25 +696,25 @@ color: rgb(245, 121, 0);</string>
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QLabel" name="currentVideoname">
+   <widget class="QLabel" name="currentvideoname">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>140</x>
       <y>410</y>
-      <width>121</width>
+      <width>361</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
-     <string>---</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLCDNumber" name="watchcounter">
     <property name="geometry">
      <rect>
-      <x>583</x>
+      <x>512</x>
       <y>391</y>
-      <width>210</width>
+      <width>281</width>
       <height>41</height>
      </rect>
     </property>
@@ -739,6 +726,19 @@ color: rgb(245, 121, 0);</string>
     </property>
     <property name="value" stdset="0">
      <double>0.000000000000000</double>
+    </property>
+   </widget>
+   <widget class="QLabel" name="recordicon">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>10</y>
+      <width>60</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>
@@ -755,12 +755,12 @@ color: rgb(245, 121, 0);</string>
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionSet_Path"/>
+    <addaction name="setpath"/>
    </widget>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionSet_Path">
+  <action name="setpath">
    <property name="text">
     <string>Set Path</string>
    </property>
