@@ -68,7 +68,8 @@ class OAKD(QWidget):
         self.streamName = streamName
         self.videoContainer = videoContainer
         self.videoname = ""
-        self.PATH = '/home/bihut/Vídeos/'
+        self.PATH = '/home/andres/Vídeos/'
+        
 
     def startCamera(self):
         self.thread = VideoThread(self.streamName,self.videoContainer)
@@ -86,7 +87,6 @@ class OAKD(QWidget):
         self.videoname=""
         self.thread.stopRecording()
 
-
     def getCurrentVideoName(self):
         return self.videoname
 
@@ -95,12 +95,28 @@ class OAKD(QWidget):
         print("path cambiado a %s",self.PATH)
 
     def startRecording(self,id):
+        cap = cv2.VideoCapture(0) #default -> /dev/video0
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         self.videoname = self.PATH + str(id)+".mp4"
-        writer = cv2.VideoWriter(self.videoname, fourcc, 30, (
-            self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
+        writer = cv2.VideoWriter(self.videoname, fourcc, 30.0, (1280,720))
+
+        while cap.isOpened(): # Capture frame-by-frame
+            ret, frame = cap.read()
+            if ret:
+                frame = cv2.resize(frame, (1280, 720)) #resize frame before write
+                writer.write(frame)
+                # cv2.imshow('Video', frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+            else:
+                break
+       # writer = cv2.VideoWriter(self.videoname, fourcc, 30, (self.videoContainer.frameGeometry().width(),
+            #self.videoContainer.frameGeometry().height()))
+        #
+        #
         #writer = cv2.VideoWriter(self.videoname, fourcc, 30, (
         #        1280, 800))
+        
         self.thread.startRecording(writer)
 
     @pyqtSlot(np.ndarray)
@@ -125,7 +141,8 @@ class OAKD(QWidget):
         convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
         #p = convert_to_Qt_format.scaled(self.disply_width, self.display_height, Qt.KeepAspectRatio)
         p = convert_to_Qt_format.scaled(self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height(), Qt.KeepAspectRatio)
-
+#self.videoContainer.frameGeometry().width()
+#self.videoContainer.frameGeometry().height()
         return QPixmap.fromImage(p)
 
 
