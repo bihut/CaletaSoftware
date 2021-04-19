@@ -21,9 +21,13 @@ class VideoThread(QThread):
         #self.out1 = cv2.VideoWriter('/home/bihut/Vídeos/output.mp4', self.fourcc, 30, (self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
 
         cam_rgb = self.pipeline.createColorCamera()
-        cam_rgb.setPreviewSize(self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height())
+        #cam_rgb.setPreviewSize(self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height())
+
+        cam_rgb.setPreviewSize(3840,2160)
+        #cam_rgb.setPreviewSize(1280, 2160)
         cam_rgb.setBoardSocket(dai.CameraBoardSocket.RGB)
-        cam_rgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
+        #cam_rgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
+        cam_rgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_4_K)
         cam_rgb.setInterleaved(False)
         cam_rgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.RGB)
         xout_rgb = self.pipeline.createXLinkOut()
@@ -34,12 +38,19 @@ class VideoThread(QThread):
         with dai.Device(self.pipeline) as device:
             device.startPipeline()
             q_rgb = device.getOutputQueue(name=self.streamName, maxSize=4, blocking=False)
+            print(type(q_rgb))
             while self._run_flag:
                 in_rgb = q_rgb.get()  # blocking call, will wait until a new data has arrived
-                arr2 = np.require(in_rgb.getCvFrame(), np.uint8, 'C')
+                frame = cv2.resize(in_rgb.getCvFrame(), (self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
+                #arr2 = np.require(in_rgb.getCvFrame(), np.uint8, 'C')
+                arr2 = np.require(frame, np.uint8, 'C')
                 self.change_pixmap_signal.emit(arr2)
                 if self._recording:
-                    self.record_video.emit(arr2, self.writer)
+                    #frame = cv2.resize(in_rgb.getCvFrame(), (1280, 720))
+                    #print(in_rgb.getCvFrame().shape)
+
+                    arr3 = np.require(in_rgb.getCvFrame(), np.uint8, 'C')
+                    self.record_video.emit(arr3, self.writer)
 
     def startRecording(self,writer):
         self.writer = writer
@@ -68,8 +79,7 @@ class OAKD(QWidget):
         self.streamName = streamName
         self.videoContainer = videoContainer
         self.videoname = ""
-        self.PATH = '/home/andres/Vídeos/'
-        
+        self.PATH = '/home/bihut/Vídeos/'
 
     def startCamera(self):
         self.thread = VideoThread(self.streamName,self.videoContainer)
@@ -87,36 +97,22 @@ class OAKD(QWidget):
         self.videoname=""
         self.thread.stopRecording()
 
+
     def getCurrentVideoName(self):
         return self.videoname
 
     def changePath(self,str):
         self.PATH = str
-        print("path cambiado a %s",self.PATH)
+        #print("path cambiado a %s",self.PATH)
 
     def startRecording(self,id):
-        cap = cv2.VideoCapture(0) #default -> /dev/video0
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        self.videoname = self.PATH + str(id)+".mp4"
-        writer = cv2.VideoWriter(self.videoname, fourcc, 30.0, (1280,720))
-
-        while cap.isOpened(): # Capture frame-by-frame
-            ret, frame = cap.read()
-            if ret:
-                frame = cv2.resize(frame, (1280, 720)) #resize frame before write
-                writer.write(frame)
-                # cv2.imshow('Video', frame)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
-            else:
-                break
-       # writer = cv2.VideoWriter(self.videoname, fourcc, 30, (self.videoContainer.frameGeometry().width(),
-            #self.videoContainer.frameGeometry().height()))
-        #
-        #
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        self.videoname = self.PATH + str(id)+".avi"
         #writer = cv2.VideoWriter(self.videoname, fourcc, 30, (
-        #        1280, 800))
-        
+        #    self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
+
+        writer = cv2.VideoWriter(self.videoname, fourcc, 30, (
+                3840, 2160))
         self.thread.startRecording(writer)
 
     @pyqtSlot(np.ndarray)
@@ -141,8 +137,7 @@ class OAKD(QWidget):
         convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
         #p = convert_to_Qt_format.scaled(self.disply_width, self.display_height, Qt.KeepAspectRatio)
         p = convert_to_Qt_format.scaled(self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height(), Qt.KeepAspectRatio)
-#self.videoContainer.frameGeometry().width()
-#self.videoContainer.frameGeometry().height()
+
         return QPixmap.fromImage(p)
 
 
