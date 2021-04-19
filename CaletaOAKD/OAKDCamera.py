@@ -7,6 +7,9 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QThread
 import numpy as np
 import depthai as dai
 
+RESOLUTION_WIDTH = 1080
+RESOLUTION_HEIGHT = 720
+FPS = 60
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
     record_video = pyqtSignal(np.ndarray, cv2.VideoWriter)
@@ -17,17 +20,19 @@ class VideoThread(QThread):
         self.streamName = streamName
         self.videoContainer = videoContainer
         self.pipeline = dai.Pipeline()
+
+        #3840*2160
         #self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         #self.out1 = cv2.VideoWriter('/home/bihut/Vídeos/output.mp4', self.fourcc, 30, (self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
 
         cam_rgb = self.pipeline.createColorCamera()
         #cam_rgb.setPreviewSize(self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height())
 
-        cam_rgb.setPreviewSize(3840,2160)
+        cam_rgb.setPreviewSize(RESOLUTION_WIDTH,RESOLUTION_HEIGHT)
         #cam_rgb.setPreviewSize(1280, 2160)
         cam_rgb.setBoardSocket(dai.CameraBoardSocket.RGB)
-        #cam_rgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
-        cam_rgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_4_K)
+        cam_rgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
+        #cam_rgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_4_K)
         cam_rgb.setInterleaved(False)
         cam_rgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.RGB)
         xout_rgb = self.pipeline.createXLinkOut()
@@ -111,8 +116,8 @@ class OAKD(QWidget):
         #writer = cv2.VideoWriter(self.videoname, fourcc, 30, (
         #    self.videoContainer.frameGeometry().width(), self.videoContainer.frameGeometry().height()))
 
-        writer = cv2.VideoWriter(self.videoname, fourcc, 30, (
-                3840, 2160))
+        writer = cv2.VideoWriter(self.videoname, fourcc, FPS, (
+                RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
         self.thread.startRecording(writer)
 
     @pyqtSlot(np.ndarray)
