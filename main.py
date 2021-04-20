@@ -29,17 +29,15 @@ class DisplayImage(QThread):
             time.sleep(1)
             self.displayImg.emit(False)
             time.sleep(1)
-            print("aqui dentro")
 
     def stop(self):
         """Sets run flag to False and waits for thread to finish"""
-        self._recording= False
+        self._recording = False
 
 
 def changeRecordImg(state):
     ui.recordicon.setVisible(state)
     ui.recordstate.setVisible(state)
-    print("cambiando %b",state)
 
 
 def handleCamera():
