@@ -84,6 +84,7 @@ def handleRecording():
 
 def visibleRecordItems(state):
     ui.recordicon.setVisible(state)
+    
     ui.recordstate.setVisible(state)
     ui.watchcounter.setVisible(state)
     ui.currentvideoname.setVisible(state)

@@ -6,6 +6,7 @@ import cv2
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QThread
 import numpy as np
 import depthai as dai
+import os
 
 
 RESOLUTION_WIDTH = 1920
@@ -308,11 +309,24 @@ class VideoThread(QThread):
 
     def stopRecording(self):
         self._recording=False
-        cmd = "ffmpeg -framerate 30 -i {} -c copy {}"
-        print(cmd.format(self.videoname + '-right.h264', self.videoname + "-right.mp4"))
-        print(cmd.format(self.videoname + '-left.h264', self.videoname + "-left.mp4"))
-        print(cmd.format(self.videoname + '-center.h265', self.videoname + "-center.mp4"))
+        cmd = "ffmpeg -hide_banner -loglevel error -framerate 30 -i {} -c copy {}"
+        command_right=cmd.format(self.videoname + '-right.h264', self.videoname + "-right.mp4")
+        command_left=cmd.format(self.videoname + '-left.h264', self.videoname + "-left.mp4")
+        command_center=cmd.format(self.videoname + '-center.h265', self.videoname + "-center.mp4")
 
+        print(command_right)
+        print(command_left)
+        print(command_center)
+
+        #call commands on terminal
+        os.system(command_right)
+        os.system(command_left)
+        os.system(command_center)
+
+        #remove older .h264 & .h265 files
+        os.remove(self.videoname + '-right.h264')
+        os.remove(self.videoname + '-left.h264')
+        os.remove(self.videoname + '-center.h265')
 
     def stop(self):
         """Sets run flag to False and waits for thread to finish"""
@@ -333,7 +347,7 @@ class OAKD(QWidget):
         self.streamName = streamName
         self.videoContainer = videoContainer
 
-        self.PATH = '/home/bihut/Vídeos/'
+        self.PATH = '/home/andres/Vídeos/'
         self.videoname = ""
 
     def startCamera(self):
