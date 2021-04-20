@@ -42,7 +42,7 @@
  [],
  False,
  False,
- 1618845413,
+ 1618856457,
  [('run',
    '/home/bihut/.local/lib/python3.8/site-packages/PyInstaller/bootloader/Linux-64bit/run',
    'EXECUTABLE')])

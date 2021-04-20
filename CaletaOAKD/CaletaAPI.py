@@ -26,7 +26,7 @@ class CaletaAPI:
         self.camera.stopAll()
 
     def startRecording(self):
-        self.camera.startRecording(self.getUniqueID())
+        self.camera.startRecording()
 
     def stopRecording(self):
         self.camera.stopRecording()
@@ -48,8 +48,9 @@ class CaletaAPI:
         self.streamName = streamName;
         self.videoContainer = videoContainer
         self.camera = OAKD(self.streamName,self.videoContainer)
+        self.camera.changePath(self.PATH,self.getUniqueID())
         self.camera.startCamera()
-        self.camera.changePath(self.PATH)
+
 
         '''''
         with dai.Device(self.pipeline) as device:
