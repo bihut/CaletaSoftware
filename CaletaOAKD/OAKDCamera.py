@@ -11,7 +11,7 @@ import os
 
 RESOLUTION_WIDTH = 1920
 RESOLUTION_HEIGHT = 1080
-FPS = 60
+FPS = 30
 FPS_MONO = 30
 RESOLUTION_WIDTH_MONO = 1280
 RESOLUTION_HEIGHT_MONO = 720
@@ -72,12 +72,17 @@ class CameraThread(QThread):
         ve2Out.setStreamName("ve2Out")
         #---
         cam_rgb.setVideoSize(RESOLUTION_WIDTH,RESOLUTION_HEIGHT)
-        #cam_rgb.setPreviewSize(300, 300)
+
         videoEncoder = self.pipeline.createVideoEncoder()
         videoEncoder.setDefaultProfilePreset(cam_rgb.getVideoSize(), FPS,
                                              dai.VideoEncoderProperties.Profile.MJPEG)
+
         cam_rgb.video.link(videoEncoder.input)
         videoEncoder.bitstream.link(ve2Out.input)
+
+        ColorEncoder = self.pipeline.createVideoEncoder()
+        ColorEncoder.setDefaultProfilePreset(1920, 1080, 30, dai.VideoEncoderProperties.Profile.H265_MAIN)
+        ColorEncoder.bitstream.link(ve2Out.input)
 
         #---
         #ve2.bitstream.link(ve2Out.input)
@@ -251,10 +256,9 @@ class VideoThread(QThread):
 
     def run(self):
         device = self.device# dai.Device(self.pipeline)
-        #device.startPipeline()
-        queue_size = 8
+
         outQ1 = device.getOutputQueue(name='ve1Out')
-        outQ2 = device.getOutputQueue(name="ve2Out")
+        outQ2 = device.getOutputQueue(name='ve2Out')
         outQ3 = device.getOutputQueue(name='ve3Out')
         file_mono1_h264 = open(self.videoname + '-right.h264', 'wb')
         file_mono2_h264 = open(self.videoname + '-left.h264', 'wb')
