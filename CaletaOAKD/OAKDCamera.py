@@ -252,6 +252,7 @@ class VideoThread(QThread):
     def run(self):
         device = self.device# dai.Device(self.pipeline)
         #device.startPipeline()
+        queue_size = 8
         outQ1 = device.getOutputQueue(name='ve1Out')
         outQ2 = device.getOutputQueue(name="ve2Out")
         outQ3 = device.getOutputQueue(name='ve3Out')
@@ -260,6 +261,7 @@ class VideoThread(QThread):
         file_color_h265 = open(self.videoname + '-center.h265', 'wb')
         while self._recording:
             try:
+
                 while outQ1.has():
                     outQ1.get().getData().tofile(file_mono1_h264)
                 while outQ2.has():
@@ -269,7 +271,9 @@ class VideoThread(QThread):
             except KeyboardInterrupt:
                  # Keyboard interrupt (Ctrl + C) detected
                  print("error")
-
+        file_mono1_h264.close()
+        file_mono2_h264.close()
+        file_color_h265.close()
         '''
         with dai.Device(self.pipeline) as device, open(self.videoname+'-right.h264', 'wb') as file_mono1_h264, open(self.videoname+'-center.h265', 'wb') as file_color_h265, open(self.videoname+'-left.h264', 'wb') as file_mono2_h264:
             device.startPipeline()
@@ -292,7 +296,7 @@ class VideoThread(QThread):
                     while qRight.has():
                         qRight.get().getData().tofile(file_mono1_h264)
                     while q_rgb.has():
-                            q_rgb.get().getData().tofile(file_color_h265)
+                        q_rgb.get().getData().tofile(file_color_h265)
                     #arr3 = np.require(in_monoleft.getCvFrame(), np.uint8, 'C')
                     #self.record_video.emit(arr3, self.writer_left)
                     #arr3 = np.require(in_monoright.getCvFrame(), np.uint8, 'C')
@@ -347,7 +351,7 @@ class OAKD(QWidget):
         self.streamName = streamName
         self.videoContainer = videoContainer
 
-        self.PATH = '/home/andres/Vídeos/'
+        self.PATH = '/home/bihut/Vídeos/'
         self.videoname = ""
 
     def startCamera(self):

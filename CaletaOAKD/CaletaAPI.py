@@ -20,7 +20,7 @@ class CaletaAPI:
 
     def __init__(self,pipeline):
         self.pipeline =  pipeline
-        self.PATH = "/home/andres/Vídeos/"
+        self.PATH = "/home/bihut/Vídeos/"
 
     def stopCamera(self):
         self.camera.stopAll()

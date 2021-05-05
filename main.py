@@ -64,27 +64,30 @@ def handleRecording():
     if ui.startRecording.isChecked():
         ui.startRecording.setText("Stop Recording")
         ui.startRecording.setIcon(QtGui.QIcon('imgs/record.png'))
-        caleta.startRecording()
         visibleRecordItems(True)
         startCounting()
         ui.currentvideoname.setText(caleta.camera.getCurrentVideoName())
+        caleta.startRecording()
         thread = DisplayImage()
         thread.displayImg.connect(changeRecordImg)
         thread.start()
         thread.exec()
     else:
-        ui.startRecording.setText("Start Recording")
-        ui.startRecording.setIcon(QtGui.QIcon())
         caleta.stopRecording()
         visibleRecordItems(False)
+        ui.startRecording.setText("Start Recording")
+        ui.startRecording.setIcon(QtGui.QIcon())
         stopCounting()
-        thread.stop()
+        try:
+            thread.stop()
+        except:
+            pass
 
 
 
 def visibleRecordItems(state):
+    print("haciendo visibles los objetos", state)
     ui.recordicon.setVisible(state)
-    
     ui.recordstate.setVisible(state)
     ui.watchcounter.setVisible(state)
     ui.currentvideoname.setVisible(state)
