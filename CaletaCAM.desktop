@@ -2,8 +2,8 @@
 Version=1.0
 Name=CaletaCAM
 Comment=Abre la aplicación para la captura mediante OAK-D
-Exec=python3 /home/andres/caleta/CaletaSoftware/main.py
-Icon=/home/andres/caleta/CaletaSoftware/imgs/logo_caleta_sinfondo.png
+Exec=python3 /home/bihut/dev/CaletaTeam/CaletaSoftware/main.py
+Icon=/home/bihut/dev/CaletaTeam/CaletaSoftware/imgs/logo_caleta_sinfondo.png
 Terminal=true
 Type=Application
 Categories=Utility;Application;
