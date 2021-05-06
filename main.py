@@ -39,10 +39,7 @@ class DisplayImage(QThread):
 def createDefaultRecordFolder():
     global PATH
     cmd = 'mkdir -p /home/$USER/oakd-videos'
-    #path = cmd.format(self.videoname + '-right.h264', self.videoname + "-right.mp4")
     os.system(cmd)
-    #cmd = 'echo /home/$USER/oakd-videos/'
-    #out=os.popen(cmd).read()
     cmd = 'echo /home/$USER/oakd-videos/'
     PATH=str(os.popen(cmd).read()).rstrip()
 
@@ -97,7 +94,6 @@ def handleRecording():
 
 
 def visibleRecordItems(state):
-    #print("haciendo visibles los objetos", state)
     ui.recordicon.setVisible(state)
     ui.recordstate.setVisible(state)
     ui.watchcounter.setVisible(state)
