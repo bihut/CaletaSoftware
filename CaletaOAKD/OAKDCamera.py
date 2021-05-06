@@ -345,13 +345,15 @@ class OAKD(QWidget):
     def setVideoContainer(self,container):
         self.videoContainer = container
 
-    def __init__(self,streamName,videoContainer):
+    def __init__(self,streamName,videoContainer,path,videoid):
         super().__init__()
         self.streamName = streamName
         self.videoContainer = videoContainer
+        #cmd = 'echo /home/$USER/oakd-videos/'
+        self.PATH = path# str(os.system(cmd))
+        #self.PATH = '/home/bihut/Vídeos/'
+        self.videoname = self.PATH+str(videoid)
 
-        self.PATH = '/home/bihut/Vídeos/'
-        self.videoname = ""
 
     def startCamera(self):
         #self.thread = VideoThread(self.streamName,self.videoContainer,self.PATH)

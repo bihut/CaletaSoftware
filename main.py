@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import os
+
 import sys
 import time
 
@@ -34,6 +36,15 @@ class DisplayImage(QThread):
         """Sets run flag to False and waits for thread to finish"""
         self._recording = False
 
+def createDefaultRecordFolder():
+    global PATH
+    cmd = 'mkdir -p /home/$USER/oakd-videos'
+    #path = cmd.format(self.videoname + '-right.h264', self.videoname + "-right.mp4")
+    os.system(cmd)
+    #cmd = 'echo /home/$USER/oakd-videos/'
+    #out=os.popen(cmd).read()
+    cmd = 'echo /home/$USER/oakd-videos/'
+    PATH=str(os.popen(cmd).read()).rstrip()
 
 def changeRecordImg(state):
     ui.recordicon.setVisible(state)
@@ -105,7 +116,7 @@ def changePath():
         caleta.changePath(str(text))
 
 if __name__ == "__main__":
-
+    global PATH
     app = QtWidgets.QApplication(sys.argv)
     window = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
@@ -121,6 +132,8 @@ if __name__ == "__main__":
     ui.watchcounter.setNumDigits(8)
 
     #-----
+    createDefaultRecordFolder()
+    #-----
     s = 0
     timer = QTimer()
     timer.timeout.connect(LCDEvent)
@@ -132,7 +145,7 @@ if __name__ == "__main__":
 
     window.show()
     pipeline = CaletaAPI.CaletaAPI.getNewPipeline()
-    caleta = CaletaAPI.CaletaAPI(pipeline)
+    caleta = CaletaAPI.CaletaAPI(pipeline,PATH)
     sys.exit(app.exec_())
 
 

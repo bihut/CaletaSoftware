@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import depthai as dai
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -18,9 +20,10 @@ class CaletaAPI:
         ts = calendar.timegm(time.gmtime())
         return ts
 
-    def __init__(self,pipeline):
+    def __init__(self,pipeline,path):
         self.pipeline =  pipeline
-        self.PATH = "/home/bihut/Vídeos/"
+        #cmd = 'echo /home/$USER/oakd-videos/'
+        self.PATH = path #str(os.system(cmd)) #"/home/bihut/Vídeos/"
 
     def stopCamera(self):
         self.camera.stopAll()
@@ -47,8 +50,8 @@ class CaletaAPI:
     def switchOnCamera(self, streamName,videoContainer):
         self.streamName = streamName;
         self.videoContainer = videoContainer
-        self.camera = OAKD(self.streamName,self.videoContainer)
-        self.camera.changePath(self.PATH,self.getUniqueID())
+        self.camera = OAKD(self.streamName,self.videoContainer,self.PATH, self.getUniqueID())
+        #self.camera.changePath(self.PATH,self.getUniqueID())
         self.camera.startCamera()
 
 
