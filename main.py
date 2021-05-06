@@ -86,7 +86,7 @@ def handleRecording():
 
 
 def visibleRecordItems(state):
-    print("haciendo visibles los objetos", state)
+    #print("haciendo visibles los objetos", state)
     ui.recordicon.setVisible(state)
     ui.recordstate.setVisible(state)
     ui.watchcounter.setVisible(state)

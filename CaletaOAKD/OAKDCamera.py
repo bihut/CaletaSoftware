@@ -46,16 +46,16 @@ class CameraThread(QThread):
         monoCam2.setCamId(2)
 
         ve1 = self.pipeline.createVideoEncoder()
-        ve1.setDefaultProfilePreset(1280, 720, 30, dai.VideoEncoderProperties.Profile.H264_MAIN)
+        ve1.setDefaultProfilePreset(1280, 720, FPS_MONO, dai.VideoEncoderProperties.Profile.H264_MAIN)
         monoCam.out.link(ve1.input)
 
         ve2 = self.pipeline.createVideoEncoder()
-        ve2.setDefaultProfilePreset(1920, 1080, 30, dai.VideoEncoderProperties.Profile.H265_MAIN)
+        ve2.setDefaultProfilePreset(1920, 1080, FPS, dai.VideoEncoderProperties.Profile.H265_MAIN)
         cam_rgb.video.link(ve2.input)
 
 
         ve3 = self.pipeline.createVideoEncoder()
-        ve3.setDefaultProfilePreset(1280, 720, 30, dai.VideoEncoderProperties.Profile.H264_MAIN)
+        ve3.setDefaultProfilePreset(1280, 720, FPS_MONO, dai.VideoEncoderProperties.Profile.H264_MAIN)
         monoCam2.out.link(ve3.input)
 
         # Create outputs
@@ -85,9 +85,9 @@ class CameraThread(QThread):
         cam_rgb.video.link(videoEncoder.input)
         videoEncoder.bitstream.link(cameraOut.input)
 
-        ColorEncoder = self.pipeline.createVideoEncoder()
-        ColorEncoder.setDefaultProfilePreset(1920, 1080, 30, dai.VideoEncoderProperties.Profile.H265_MAIN)
-        ColorEncoder.bitstream.link(ve2Out.input)
+        #ColorEncoder = self.pipeline.createVideoEncoder()
+        #ColorEncoder.setDefaultProfilePreset(1920, 1080, FPS, dai.VideoEncoderProperties.Profile.H265_MAIN)
+        #ColorEncoder.bitstream.link(ve2Out.input)
 
         #---
 
