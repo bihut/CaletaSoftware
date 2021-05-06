@@ -33,12 +33,7 @@ class CameraThread(QThread):
 
         cam_rgb = self.pipeline.createColorCamera()
         cam_rgb.setPreviewSize(RESOLUTION_WIDTH,RESOLUTION_HEIGHT)
-        #cam_rgb.setBoardSocket(dai.CameraBoardSocket.RGB)
-        #cam_rgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
-        #cam_rgb.setInterleaved(False)
-        #xout_rgb = self.pipeline.createXLinkOut()
-        #xout_rgb.setStreamName(self.streamName)
-        #cam_rgb.preview.link(xout_rgb.input)
+
 
 
         #
@@ -70,6 +65,16 @@ class CameraThread(QThread):
 
         ve2Out = self.pipeline.createXLinkOut()
         ve2Out.setStreamName("ve2Out")
+        ve2.bitstream.link(ve2Out.input)
+
+        ve3Out = self.pipeline.createXLinkOut()
+        ve3Out.setStreamName('ve3Out')
+        ve3.bitstream.link(ve3Out.input)
+
+        cameraOut = self.pipeline.createXLinkOut()
+        cameraOut.setStreamName("cameraOut")
+
+
         #---
         cam_rgb.setVideoSize(RESOLUTION_WIDTH,RESOLUTION_HEIGHT)
 
@@ -78,30 +83,20 @@ class CameraThread(QThread):
                                              dai.VideoEncoderProperties.Profile.MJPEG)
 
         cam_rgb.video.link(videoEncoder.input)
-        videoEncoder.bitstream.link(ve2Out.input)
+        videoEncoder.bitstream.link(cameraOut.input)
 
         ColorEncoder = self.pipeline.createVideoEncoder()
         ColorEncoder.setDefaultProfilePreset(1920, 1080, 30, dai.VideoEncoderProperties.Profile.H265_MAIN)
         ColorEncoder.bitstream.link(ve2Out.input)
 
         #---
-        #ve2.bitstream.link(ve2Out.input)
-
-        #cam_rgb.setInterleaved(True)
-        #cam_rgb.preview.link(ve2Out.input)
-
-        ve3Out = self.pipeline.createXLinkOut()
-        ve3Out.setStreamName('ve3Out')
-        ve3.bitstream.link(ve3Out.input)
-
-
 
 
     def run(self):
         with dai.Device(self.pipeline) as self.device:
             device = self.device
             device.startPipeline()
-            data = device.getOutputQueue('ve2Out')
+            data = device.getOutputQueue('cameraOut')
             while self._run_flag:
                 #for previewFrame in previewFrames:
                     #cv2.imshow('preview',
